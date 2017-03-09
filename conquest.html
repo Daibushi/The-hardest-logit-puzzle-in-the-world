@@ -1,0 +1,225 @@
+<DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Conquest</title>
+	<script type="text/javascript" src="jquery.min.js"></script>
+	<style type="text/css">
+		body {
+		}
+		table {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			margin-right: -50%;
+			transform: translate(-50%, -50%); 
+		}
+		td {
+			/*border: 1px dashed green;*/
+		}
+		img	{
+			height: 250px;
+		}
+		.expression input {
+			width: 50%;
+			text-align-last: center;
+		}
+
+		p {
+			font-size: 40px;
+			font-family: Times New Roman Georgia;
+		}		
+
+		.selected {
+			border-radius: 20px;
+			background-color: #8ff79b;
+			border-top-left-radius: 66px;
+			border-top-right-radius: 66px;
+			border: none;
+		}
+	</style>
+	<script type="text/javascript">
+		var verd = Math.floor(Math.random()*2) % 2 === 0 ? "ozo" : "ulu";
+		var ment = verd === "ozo" ? "ulu" : "ozo";
+		var rand = [[0,1,2],
+					[0,2,1],
+					[1,2,0],
+					[1,0,2],
+					[2,1,0],
+					[2,0,1]];
+		
+		var timesTried = 0;
+		var options = [["tee","v"],
+					  ["eff","m"],
+					  ["arr","r"]];
+		var you;
+
+		var selected = Math.floor(Math.random()*6);
+		
+		var rei = [
+					options[rand[selected][0]][0],
+				   	options[rand[selected][1]][0],
+				   	options[rand[selected][2]][0]
+				  ];
+		var selectedKing = -1;
+		console.log("options",options);
+		console.log("verd",verd);
+		console.log("kings",rei);
+		console.log("times",timesTried);
+		console.log("ment",ment);
+
+		// console.log(Math.ceil(Math.random()* 3));
+
+		function randomAsw(){
+			console.log("random msg");
+			if(Math.ceil(Math.random()*2) % 2 === 0){
+				return true;
+			}else {
+				return false;
+			}
+		}
+	
+	$(document).ready(function(){
+		$("#expression").val("");
+
+    	$("#one").click(function(){
+			$("#one").addClass("selected"); 
+			$("#two").removeClass("selected"); 
+			$("#three").removeClass("selected"); 
+			selectedKing = 0;
+			yourname = options[selectedKing][0];
+			youlie = lie(options[selectedKing][1]);
+			console.log("rei0");
+
+		});
+
+		$("#two").click(function(){
+			console.log("Rei 1");
+			$("#one").removeClass("selected"); 
+			$("#two").addClass("selected"); 
+			$("#three").removeClass("selected"); 
+			selectedKing = 1;
+			yourname = options[selectedKing][0];
+			youlie = lie(options[selectedKing][1]);
+		});
+
+		$("#three").click(function(){
+			$("#one").removeClass("selected"); 
+			$("#two").removeClass("selected"); 
+			$("#three").addClass("selected"); 
+			console.log("Rei 2");
+			selectedKing = 2;
+			yourname = options[selectedKing][0];
+			youlie = lie(options[selectedKing][1]);
+		});
+	});
+
+
+	function putMsg(msg){
+		console.log("putMsg",msg);
+		document.getElementById("#msg").innerText = msg;
+	}
+
+	function lie(lie){
+		switch(lie){
+			case "v":
+				return response? verd:ment;
+			break;
+			case "m":
+				return response? ment:verd;
+			break;
+			case "r":
+				return randomAsw()?verd:ment;
+			break;	
+		}
+	}
+
+	function  getExpression(){
+		console.log("getExpression");
+
+		var a = $("#expression").val();
+		a = a.trim();
+		if(a.length > 0 && timesTried <= 2){
+			console.log("getExpression if");
+			try{
+				eval("if (" + a + "){ response(true);}"+
+				"else{ response(false);}");
+			} catch(err){
+				alert("pergunta inválida.");
+			}
+		}else {
+			if(timesTried > 2 ){
+				console.log("getExpression timesTried");
+				window.location.reload();
+				console.log("reload");
+				$("#expression").val("");
+			}
+		}
+	}
+
+	function onkey(event){
+		if(event.keyCode === 13){
+			getExpression();
+		}
+	}
+
+	function response(response){
+		console.log(response,selectedKing);
+		if(selectedKing === -1){
+			alert("selecione um rei.");
+			return;
+		}
+		timesTried++;
+		console.log("times",timesTried);
+		console.log("rei kind",options[selectedKing][1]);
+		switch(options[selectedKing][1]){
+			case "v":
+				putMsg(response? verd:ment);
+			break;
+			case "m":
+				putMsg(response? ment:verd);
+			break;
+			case "r":
+				putMsg(randomAsw()?verd:ment);
+			break;	
+		}
+	}
+
+
+	</script>
+</head>
+<body>
+<table>
+	<tr>
+		<td width="40px" height="40px" id="one">
+			<img class="" src="rei1.png" id="#rei1">
+		</td>
+		<td width="40px" height="40px" id="two">
+			<img class="" src="rei2.png" id="#rei2">
+		</td>
+		<td width="40px" height="40px" id="three">
+			<img class="" src="rei3.png" id="#rei3">
+		</td>
+	</tr>
+	<tr height="5px"></tr>
+	<tr>
+		<td align=center colspan="3" class="expression">
+			<input type="text" id="expression" name="expression" onkeypress="onkey(event)" placeholder="Expressão lógica">
+		</td>
+	</tr>
+	<tr height="10px;"></tr>
+	<tr>
+		<td colspan="3" align=center>
+		<button onclick="getExpression();">Perguntar</button>
+		</td>
+	</tr>
+	<tr height="10px;"></tr>
+	<tr >
+		<td colspan="3" align="center" height="50px">
+			<p id="#msg"> </p>
+		</td>
+	</tr>
+</table>
+</body>
+</html>
